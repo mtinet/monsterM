@@ -1,10 +1,13 @@
 #include "FaBoPWM_PCA9685.h"
-
-//#include "servo.hpp"
+#include "HUSKYLENS.h"
+#include "SoftwareSerial.h"
 
 FaBoPWM faboPWM;
+HUSKYLENS huskylens;
+SoftwareSerial mySerial(2, 3); // RX, TX
+
 int pos = 0;
-int MAX_VALUE = 2000;   // 电机速度限制
+int MAX_VALUE = 2000;   // 모터 속도 제한
 int MIN_VALUE = 300;
 
 #define DIRA1 0
@@ -16,7 +19,7 @@ int MIN_VALUE = 300;
 #define DIRD1 6
 #define DIRD2 7
 
-//电机控制，前进、后退、停止
+//모터 제어, 전진, 후진, 정지
 #define MOTORA_FORWARD(pwm)    do{faboPWM.set_channel_value(DIRA1,pwm);faboPWM.set_channel_value(DIRA2, 0);}while(0)
 #define MOTORA_STOP(x)         do{faboPWM.set_channel_value(DIRA1,0);faboPWM.set_channel_value(DIRA2, 0);}while(0)
 #define MOTORA_BACKOFF(pwm)    do{faboPWM.set_channel_value(DIRA1,0);faboPWM.set_channel_value(DIRA2, pwm);}while(0)
@@ -35,8 +38,6 @@ int MIN_VALUE = 300;
 
 #define SERIAL  Serial
 
-//#define SERIAL  Serial3
-
 #define LOG_DEBUG
 
 #ifdef LOG_DEBUG
@@ -45,7 +46,7 @@ int MIN_VALUE = 300;
 #define M_LOG 
 #endif
 
-//PWM参数
+//PWM매개변수
 #define MAX_PWM   2000
 #define MIN_PWM   400
 
@@ -53,7 +54,7 @@ int Motor_PWM = 500;
 int LR_PWM = 800;
 int rotation_PWM = 600;
  
-//控制电机运动    宏定义
+//모터 움직임 제어 매크로 정의
 //    ↑A-----B↑   
 //     |  ↑  |
 //     |  |  |
@@ -158,7 +159,7 @@ void STOP()
   MOTORC_STOP(Motor_PWM);MOTORD_STOP(Motor_PWM);
 }
 
-//串口输入控制
+//직렬 입력 제어
 void UART_Control()
 {
   char Uart_Date=0;
@@ -201,6 +202,18 @@ void UART_Control()
    }
 }
 
+void printResult(HUSKYLENSResult result){
+    if (result.command == COMMAND_RETURN_BLOCK){
+        Serial.println(String()+F("Block:xCenter=")+result.xCenter+F(",yCenter=")+result.yCenter+F(",width=")+result.width+F(",height=")+result.height+F(",ID=")+result.ID);
+    }
+    else if (result.command == COMMAND_RETURN_ARROW){
+        Serial.println(String()+F("Arrow:xOrigin=")+result.xOrigin+F(",yOrigin=")+result.yOrigin+F(",xTarget=")+result.xTarget+F(",yTarget=")+result.yTarget+F(",ID=")+result.ID);
+    }
+    else{
+        Serial.println("Object unknown!");
+    }
+}
+
 void IO_init()
 {
   STOP();
@@ -208,14 +221,25 @@ void IO_init()
 
 void setup()
 {
-  SERIAL.begin(9600);
+  SERIAL.begin(115200);
   IO_init();
   if(faboPWM.begin()) 
   {
     Serial.println("Find PCA9685");
     faboPWM.init(300);
   }
+  
   faboPWM.set_hz(50);
+  
+  Serial.begin(115200);
+  mySerial.begin(9600);
+  while (!huskylens.begin(mySerial))
+  {
+    Serial.println(F("Begin failed!"));
+    Serial.println(F("1.Please recheck the \"Protocol Type\" in HUSKYLENS (General Settings>>Protocol Type>>Serial 9600)"));
+    Serial.println(F("2.Please recheck the connection."));
+    delay(100);
+  }
   SERIAL.print("Start");
 }
 
@@ -223,6 +247,18 @@ void setup()
 
 void loop()
 {
-    UART_Control();//串口接收处理 
-    //CAR_Control();//小车控制
+  // UART_Control();//직렬포트 수신처리, 앱을 이용하여 제어할 때 사용
+
+  // 아래는 허스키 렌즈로 제어할 때 사용
+  if (!huskylens.request()) Serial.println(F("Fail to request data from HUSKYLENS, recheck the connection!"));
+  else if(!huskylens.isLearned()) Serial.println(F("Nothing learned, press learn button on HUSKYLENS to learn one!"));
+  else if(!huskylens.available()) Serial.println(F("No block or arrow appears on the screen!"));
+  else
+  {
+    while (huskylens.available())
+    {
+      HUSKYLENSResult result = huskylens.read();
+      printResult(result);
+    }    
+  }
 }
