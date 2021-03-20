@@ -10,6 +10,8 @@ int pos = 0;
 int MAX_VALUE = 2000;   // 모터 속도 제한
 int MIN_VALUE = 300;
 
+char Uart_Date=0;
+
 #define DIRA1 0
 #define DIRA2 1
 #define DIRB1 2
@@ -162,7 +164,6 @@ void STOP()
 //직렬 입력 제어
 void UART_Control()
 {
-  char Uart_Date=0;
   if(SERIAL.available())
   {
     Uart_Date = SERIAL.read();
@@ -211,6 +212,20 @@ void printResult(HUSKYLENSResult result){
     }
     else{
         Serial.println("Object unknown!");
+    }
+
+    if(result.xCenter > 180) {
+      Uart_Date = 'D';
+      Serial.println(String() + Uart_Date + F("  right"));   
+    } else if(result.xCenter < 140) {
+      Uart_Date = 'A';
+      Serial.println(String() + Uart_Date + F("  left"));   
+    } else if(result.width < 60 && result.height < 60) {
+      Uart_Date = 'w';
+      Serial.println(String() + Uart_Date + F("  forward"));      
+    } else if(result.width > 90 && result.height > 90) {
+      Uart_Date = 'x';
+      Serial.println(String() + Uart_Date + F("  backward"));  
     }
 }
 
