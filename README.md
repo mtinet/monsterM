@@ -22,8 +22,6 @@ C:\Users\사용자 계정\Documents\Arduino\libraries
 
 HUSKYLENS huskylens;
 SoftwareSerial mySerial(2, 3); // RX, TX
-//HUSKYLENS green line >> Pin 10; blue line >> Pin 11
-void printResult(HUSKYLENSResult result);
 
 void setup() {
     Serial.begin(115200);
@@ -43,7 +41,6 @@ void loop() {
     else if(!huskylens.available()) Serial.println(F("No block or arrow appears on the screen!"));
     else
     {
-        Serial.println(F("###########"));
         while (huskylens.available())
         {
             HUSKYLENSResult result = huskylens.read();
