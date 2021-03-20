@@ -66,3 +66,6 @@ void printResult(HUSKYLENSResult result){
 ```
 
 * 시리얼 모니터를 통해 설정한 타겟이 인식되었을 때 입력되는 정보를 확인하고 필요에 따라 수정함  
+
+* 허스키 렌즈의 해상도는 320*240  
+
