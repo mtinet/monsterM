@@ -7,7 +7,7 @@ https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336
 * libraries 폴더 안에 있는 폴더(메카넘 휠 사용, 허스키렌즈 사용 라이브러리)들을 아래 폴더로 복사하여 라이브러리를 사용할 수 있도록 준비함
 C:\Users\사용자 계정\Documents\Arduino\libraries
 
-* 허스키 렌즈 세팅에서 통신속도를 설정함
+* 허스키 렌즈 세팅에서 통신속도를 설정함  
 ![](https://raw.githubusercontent.com/DFRobot/Wiki/master/SEN0305/image/UartMode.png)  
 
 * 허스키 렌지의 Object Tracking에서 하나의 타겟을 설정함  
