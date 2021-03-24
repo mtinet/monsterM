@@ -217,13 +217,20 @@ void printResult(HUSKYLENSResult result){
     if(result.xCenter > 180) {
       Uart_Date = 'D';
       Serial.println(String() + Uart_Date + F("  right"));   
-    } else if(result.xCenter < 140) {
+    }
+    if(result.xCenter < 140) {
       Uart_Date = 'A';
       Serial.println(String() + Uart_Date + F("  left"));   
-    } else if(result.width < 60 && result.height < 60) {
+    }
+     if(result.xCenter <= 180 && result.xCenter >=140) {
+      Uart_Date = 's';
+      Serial.println(String() + Uart_Date + F("  left"));   
+    }
+    if(result.width < 60 && result.height < 60) {
       Uart_Date = 'w';
       Serial.println(String() + Uart_Date + F("  forward"));      
-    } else if(result.width > 90 && result.height > 90) {
+    } 
+    if(result.width > 90 && result.height > 90) {
       Uart_Date = 'x';
       Serial.println(String() + Uart_Date + F("  backward"));  
     }
