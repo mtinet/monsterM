@@ -4,7 +4,7 @@
 
 FaBoPWM faboPWM;
 HUSKYLENS huskylens;
-SoftwareSerial mySerial(2, 3); // RX, TX
+SoftwareSerial mySerial(8, 9); // RX, TX
 
 int pos = 0;
 int MAX_VALUE = 2000;   // 모터 속도 제한
@@ -54,7 +54,7 @@ char Uart_Date=0;
 
 int Motor_PWM = 500;
 int LR_PWM = 800;
-int rotation_PWM = 600;
+int rotation_PWM = 500;
  
 //모터 움직임 제어 매크로 정의
 //    ↑A-----B↑   
@@ -205,35 +205,55 @@ void UART_Control()
 
 void printResult(HUSKYLENSResult result){
     if (result.command == COMMAND_RETURN_BLOCK){
-        Serial.println(String()+F("Block:xCenter=")+result.xCenter+F(",yCenter=")+result.yCenter+F(",width=")+result.width+F(",height=")+result.height+F(",ID=")+result.ID);
+      Serial.println(String()+F("Block:xCenter=")+result.xCenter+F(",yCenter=")+result.yCenter+F(",width=")+result.width+F(",height=")+result.height+F(",ID=")+result.ID);
+      
+      if(result.xCenter > 180) {
+        Uart_Date = 'D';
+        Serial.println(String() + Uart_Date + F("  right"));   
+      }
+      if(result.xCenter < 140) {
+        Uart_Date = 'A';
+        Serial.println(String() + Uart_Date + F("  left"));   
+      }
+       if(result.xCenter <= 180 && result.xCenter >=140) {
+        Uart_Date = 's';
+        Serial.println(String() + Uart_Date + F("  left"));   
+      }
+      if(result.width < 60 && result.height < 60) {
+        Uart_Date = 'w';
+        Serial.println(String() + Uart_Date + F("  forward"));      
+      } 
+      if(result.width > 90 && result.height > 90) {
+        Uart_Date = 'x';
+        Serial.println(String() + Uart_Date + F("  backward"));  
+      }
     }
     else if (result.command == COMMAND_RETURN_ARROW){
-        Serial.println(String()+F("Arrow:xOrigin=")+result.xOrigin+F(",yOrigin=")+result.yOrigin+F(",xTarget=")+result.xTarget+F(",yTarget=")+result.yTarget+F(",ID=")+result.ID);
+      Serial.println(String()+F("Arrow:xOrigin=")+result.xOrigin+F(",yOrigin=")+result.yOrigin+F(",xTarget=")+result.xTarget+F(",yTarget=")+result.yTarget+F(",ID=")+result.ID);
+      Uart_Date = 'w';
+      
+      if(result.xOrigin < result.xTarget && result.xOrigin - result.xTarget < -30) {
+        Uart_Date = 'D';
+        Serial.println(String() + Uart_Date + F("  right"));  
+        if(result.xOrigin < 100) {
+          Uart_Date = 'w';
+          Serial.println(String() + Uart_Date + F("  forward"));   
+        } 
+      }
+      if(result.xOrigin > result.xTarget && result.xOrigin - result.xTarget > 30) {
+        Uart_Date = 'A';
+        Serial.println(String() + Uart_Date + F("  left"));   
+        if(result.xOrigin > 200) {
+          Uart_Date = 'w';
+          Serial.println(String() + Uart_Date + F("  forward"));   
+        } 
+      }
     }
     else{
-        Serial.println("Object unknown!");
+      Serial.println("Object unknown!");
     }
 
-    if(result.xCenter > 180) {
-      Uart_Date = 'D';
-      Serial.println(String() + Uart_Date + F("  right"));   
-    }
-    if(result.xCenter < 140) {
-      Uart_Date = 'A';
-      Serial.println(String() + Uart_Date + F("  left"));   
-    }
-     if(result.xCenter <= 180 && result.xCenter >=140) {
-      Uart_Date = 's';
-      Serial.println(String() + Uart_Date + F("  left"));   
-    }
-    if(result.width < 60 && result.height < 60) {
-      Uart_Date = 'w';
-      Serial.println(String() + Uart_Date + F("  forward"));      
-    } 
-    if(result.width > 90 && result.height > 90) {
-      Uart_Date = 'x';
-      Serial.println(String() + Uart_Date + F("  backward"));  
-    }
+
 }
 
 void IO_init()
@@ -243,7 +263,7 @@ void IO_init()
 
 void setup()
 {
-  SERIAL.begin(115200);
+  SERIAL.begin(9600);
   IO_init();
   if(faboPWM.begin()) 
   {
@@ -253,7 +273,7 @@ void setup()
   
   faboPWM.set_hz(50);
   
-  Serial.begin(115200);
+  Serial.begin(9600);
   mySerial.begin(9600);
   while (!huskylens.begin(mySerial))
   {
@@ -269,7 +289,7 @@ void setup()
 
 void loop()
 {
-  // UART_Control();//직렬포트 수신처리, 앱을 이용하여 제어할 때 사용
+  UART_Control();//직렬포트 수신처리, 앱을 이용하여 제어할 때 사용
 
   // 아래는 허스키 렌즈로 제어할 때 사용
   if (!huskylens.request()) Serial.println(F("Fail to request data from HUSKYLENS, recheck the connection!"));
