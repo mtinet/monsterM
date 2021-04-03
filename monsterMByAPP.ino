@@ -4,7 +4,7 @@
 
 FaBoPWM faboPWM;
 int pos = 0;
-int MAX_VALUE = 2000;   // 电机速度限制
+int MAX_VALUE = 2000;   //  모터 속도 제한
 int MIN_VALUE = 300;
 
 #define DIRA1 0
@@ -16,7 +16,7 @@ int MIN_VALUE = 300;
 #define DIRD1 6
 #define DIRD2 7
 
-//电机控制，前进、后退、停止
+//모터 제어, 전진, 후진, 정지
 #define MOTORA_FORWARD(pwm)    do{faboPWM.set_channel_value(DIRA1,pwm);faboPWM.set_channel_value(DIRA2, 0);}while(0)
 #define MOTORA_STOP(x)         do{faboPWM.set_channel_value(DIRA1,0);faboPWM.set_channel_value(DIRA2, 0);}while(0)
 #define MOTORA_BACKOFF(pwm)    do{faboPWM.set_channel_value(DIRA1,0);faboPWM.set_channel_value(DIRA2, pwm);}while(0)
@@ -45,7 +45,7 @@ int MIN_VALUE = 300;
 #define M_LOG 
 #endif
 
-//PWM参数
+//PWM매개변수
 #define MAX_PWM   2000
 #define MIN_PWM   400
 
@@ -53,7 +53,7 @@ int Motor_PWM = 500;
 int LR_PWM = 800;
 int rotation_PWM = 600;
  
-//控制电机运动    宏定义
+//모터 움직임 제어 매크로 정의
 //    ↑A-----B↑   
 //     |  ↑  |
 //     |  |  |
@@ -158,7 +158,7 @@ void STOP()
   MOTORC_STOP(Motor_PWM);MOTORD_STOP(Motor_PWM);
 }
 
-//串口输入控制
+//직렬 입력 제어
 void UART_Control()
 {
   char Uart_Date=0;
@@ -223,6 +223,5 @@ void setup()
 
 void loop()
 {
-    UART_Control();//串口接收处理 
-    //CAR_Control();//小车控制
+    UART_Control();//직렬포트 수신처리, 앱을 이용하여 제어할 때 사용
 }
