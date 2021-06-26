@@ -51,7 +51,7 @@ int MIN_VALUE = 300;
 
 int Motor_PWM = 500;
 int LR_PWM = 800;
-int rotation_PWM = 600;
+int rotation_PWM = 700;
  
 //모터 움직임 제어 매크로 정의
 //    ↑A-----B↑   
