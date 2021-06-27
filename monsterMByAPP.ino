@@ -180,8 +180,8 @@ void UART_Control()
      case 's':  STOP();     M_LOG("Stop!\r\n");        break;
      case 'a':  LEFT_2();   M_LOG("Left!\r\n");        break;
      case 'd':  RIGHT_2();  M_LOG("Right!\r\n");        break;
-     case 'L':  Motor_PWM = 2000;  LR_PWM = 2000; M_LOG("Speed Up!\r\n");    break;
-     case 'M':  Motor_PWM = 500;   LR_PWM = 1000; M_LOG("Speed Down!\r\n");  break;
+     case 'L':  Motor_PWM = 2000;  LR_PWM = 2000; M_LOG("MAX Speed!\r\n");    break;
+     case 'M':  Motor_PWM = 500;   LR_PWM = 1000; M_LOG("MIN Speed!\r\n");  break;
      case 'o':  Motor_PWM -= 100;   LR_PWM -= 100;  M_LOG("Speed Down!\r\n");   
         if(Motor_PWM < 500) {
           Motor_PWM = 500;
