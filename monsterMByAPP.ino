@@ -189,6 +189,9 @@ void UART_Control()
         if(LR_PWM < 800) {
           LR_PWM = 800;
         }
+        if(rotation_PWM < 700) {
+          rotation_PWM = 700;
+        }
         Serial.print(Motor_PWM);  Serial.print("  "); Serial.println(LR_PWM);    break;
      case 'p':  Motor_PWM += 100;   LR_PWM += 100;  M_LOG("Speed Up!\r\n");    
         if(Motor_PWM > 1700) {
@@ -196,6 +199,9 @@ void UART_Control()
         }
         if(LR_PWM > 2000) {
           LR_PWM = 2000;
+        }
+        if(rotation_PWM > 2000) {
+          rotation_PWM = 2000;
         }
         Serial.print(Motor_PWM);  Serial.print("  "); Serial.println(LR_PWM);    break;
    }
